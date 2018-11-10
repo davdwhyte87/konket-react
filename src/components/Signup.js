@@ -8,7 +8,7 @@ class Signup extends React.Component{
                     <div class="col-md-4 offset-md-4">
                         <div class="card sg">
                             <div class="card-header">
-                                <h3 class="text-muted">Signup</h3>
+                                <h3 class="text-muted">Signup User</h3>
                             </div>
                             <div class="card-body">
                                 <form>

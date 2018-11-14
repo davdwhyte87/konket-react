@@ -95,6 +95,7 @@ class AddForm extends React.Component {
             if(data.code==1){
                 this.setState({success:true,message:data.message,any_errors:false})
                 console.log(this.state)
+                this.props.history.push('/')
             }
             else{
                 if(data.errors){

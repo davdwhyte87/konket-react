@@ -88,11 +88,7 @@ class ConfirmForm extends React.Component {
             this.setState({loading:false})
             if(data.code==1){
                 this.setState({success:true,message:data.message,any_errors:false})
-                console.log(this.state)
-                let expiration_date = new Date();
-                expiration_date.setTime(expiration_date.getTime() + (2*60*1000))
-                this.cookies.set("loggedin",true,{expires:expiration_date})
-                this.props.history.push('/')
+                this.props.history.push('/signin')
             }
             else{
                 if(data.errors){

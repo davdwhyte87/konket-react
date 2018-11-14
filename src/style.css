@@ -6,11 +6,27 @@
     font-size: 30px;
     color: white;
 }
-.bg-cr{
+.bg-r{
     background-color: crimson;
 }
-.bg-bl{
+.bg-b{
     background-color: blue;
+}
+.bg-bl{
+    background-color: rgb(59, 59, 85); 
+}
+.bg-y{
+    background-color:yellow;
+}
+.bg-g{
+    background-color:green;
+}
+.bg-gr{
+    background-color:gray;
+}
+
+.bg-p{
+    background-color: purple;
 }
 .cdp{
     font-size: 30px;

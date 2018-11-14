@@ -6,9 +6,16 @@ import Form_Error_Message from '../components/Form_Error_Message'
 import Error_Message from '../components/Error_Message'
 import Success_Message from '../components/Success_Message'
 import Loader from '../components/Loader'
+import Cookies from 'universal-cookie'
 import {Route, Link} from 'react-router-dom'
 
-class Signup extends React.Component{
+class Signin extends React.Component{
+    cookies = new Cookies();
+    componentDidMount(){
+        if(this.cookies.get('loggedin')==true){
+            this.props.history.push('/signin')
+        }
+    }
     render(){
         return(
             <section class="container">
@@ -16,11 +23,11 @@ class Signup extends React.Component{
                     <div class="col-md-5 offset-md-3">
                         <div class="card sg">
                             <div class="card-header">
-                                <h3 class="text-muted">Signup</h3>
+                                <h3 class="text-muted">Signin</h3>
                             </div>
                             <div class="card-body">
-                                <SignupForm history={this.props.history}/>
-                                <p className="text-muted">Already have an account? <Link to="/signin">Signin</Link></p>
+                                <SigninForm history={this.props.history}/>
+                                <p className="text-muted">Don't have an account? <Link to="/signup">Signup</Link></p>
                             </div>
                         </div>
                     </div>
@@ -32,12 +39,11 @@ class Signup extends React.Component{
 
 
 
-class SignupForm extends React.Component {
+class SigninForm extends React.Component {
+    cookies=new Cookies()
     constructor(props) {
       super(props);
       this.state = {
-        name: "",
-        phone:"",
         email:"",
         password:"",
         message:"",
@@ -69,13 +75,11 @@ class SignupForm extends React.Component {
         this.setState({loading:true,any_errors:false})
         this.handleInputChange(event)
         let user={
-            name:this.state.name,
-            phone:this.state.phone,
             email:this.state.email,
             password:this.state.password
         }
         console.log(user)
-        fetch(config.API_URL+'/user',{
+        fetch(config.API_URL+'/user/signin',{
             method:"POST",
             headers: {
                 'Accept': 'application/json',
@@ -88,7 +92,13 @@ class SignupForm extends React.Component {
             if(data.code==1){
                 this.setState({success:true,message:data.message,any_errors:false})
                 console.log(this.state)
-                this.props.history.push('/confirm')
+                let expiration_date = new Date();
+                expiration_date.setTime(expiration_date.getTime() + (2*60*1000))
+                if(data.token){
+                    this.cookies.set("loggedin",true)
+                    this.cookies.set("token",data.token)
+                    this.props.history.push('/')
+                }
             }
             else{
                 if(data.errors){
@@ -97,6 +107,8 @@ class SignupForm extends React.Component {
                 else{
                     this.setState({success:false,message:data.message,any_errors_:true,errors:data.errors})
                 }
+               
+                console.log(this.state.errors)  
             }
             console.log(data.code)
         })
@@ -107,7 +119,7 @@ class SignupForm extends React.Component {
     }
 
     componentDidMount(){
-   
+        
     }
 
     onDismiss(){
@@ -122,23 +134,17 @@ class SignupForm extends React.Component {
               <Form_Error_Message errors={this.state.errors} any_errors={this.state.any_errors} onDismiss={()=>{this.setState({any_errors:false})}}/>
               <form>
                     <div class="form-group">
-                        <input type="text"  onChange={this.handleInputChange} value={this.state.name} className="form-control" placeholder="Full Name" name="name" />
-                    </div>
-                    <div class="form-group">
-                        <input type="number"  onChange={this.handleInputChange} value={this.state.phone} className="form-control" placeholder="Phone number" name="phone" />
-                    </div>
-                    <div class="form-group">
                         <input type="email"  onChange={this.handleInputChange} value={this.state.email} className="form-control" placeholder="Email" name="email" />
                     </div>
                     <div class="form-group">
                         <input type="password"  onChange={this.handleInputChange} value={this.state.password} className="form-control" placeholder="Password" name="password" />
                     </div>
                     <div class="form-group">
-                        <button class="btn" onClick={this.handleSubmit}>Signup <Loader loading={this.state.loading}/></button>
+                        <button class="btn" onClick={this.handleSubmit}>Signin <Loader loading={this.state.loading}/></button>
                     </div>
                </form>
           </div>
       );
     }
   }
-export default Signup
+export default Signin

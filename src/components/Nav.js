@@ -16,7 +16,7 @@ class Nav extends React.Component{
                                 <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
                             </li>
                             <li class="nav-item">
-                                <Link className="nav-link" to="/">Find</Link>
+                                <Link className="nav-link" to="/add">Add Contact</Link>
                             </li>
                             <li class="nav-item">
                                 <Link className="nav-link" to="/signup">Signup</Link>

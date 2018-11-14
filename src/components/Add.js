@@ -6,9 +6,16 @@ import Form_Error_Message from '../components/Form_Error_Message'
 import Error_Message from '../components/Error_Message'
 import Success_Message from '../components/Success_Message'
 import Loader from '../components/Loader'
+import Cookies from 'universal-cookie'
 import {Route, Link} from 'react-router-dom'
 
-class Signup extends React.Component{
+class Add extends React.Component{
+    cookies = new Cookies();
+    componentDidMount(){
+        if(this.cookies.get('loggedin')==true){
+            this.props.history.push('/signin')
+        }
+    }
     render(){
         return(
             <section class="container">
@@ -16,11 +23,10 @@ class Signup extends React.Component{
                     <div class="col-md-5 offset-md-3">
                         <div class="card sg">
                             <div class="card-header">
-                                <h3 class="text-muted">Signup</h3>
+                                <h3 class="text-muted">Add Contact</h3>
                             </div>
                             <div class="card-body">
-                                <SignupForm history={this.props.history}/>
-                                <p className="text-muted">Already have an account? <Link to="/signin">Signin</Link></p>
+                                <AddForm history={this.props.history}/>
                             </div>
                         </div>
                     </div>
@@ -32,14 +38,15 @@ class Signup extends React.Component{
 
 
 
-class SignupForm extends React.Component {
+class AddForm extends React.Component {
+    cookies=new Cookies()
     constructor(props) {
       super(props);
       this.state = {
-        name: "",
-        phone:"",
+        name:"",
         email:"",
-        password:"",
+        phone:"",
+        address:"",
         message:"",
         any_errors:false,
         errors:[],
@@ -68,35 +75,36 @@ class SignupForm extends React.Component {
         event.preventDefault()
         this.setState({loading:true,any_errors:false})
         this.handleInputChange(event)
-        let user={
-            name:this.state.name,
-            phone:this.state.phone,
+        let contact={
             email:this.state.email,
-            password:this.state.password
+            phone:this.state.phone,
+            name:this.state.name,
+            address:this.state.address
         }
-        console.log(user)
-        fetch(config.API_URL+'/user',{
+        fetch(config.API_URL+'/contact',{
             method:"POST",
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'token':this.cookies.get('token')
             },
-            body:JSON.stringify(user),
+            body:JSON.stringify(contact),
         }).then(data=>data.json())
         .then(data=>{
             this.setState({loading:false})
             if(data.code==1){
                 this.setState({success:true,message:data.message,any_errors:false})
                 console.log(this.state)
-                this.props.history.push('/confirm')
             }
             else{
                 if(data.errors){
-                    this.setState({success:false,message:data.message,any_errors:true,errors:data.errors}) 
+                    this.setState({success:false,message:data.message,any_errors:true,errors:data.errors,any_errors_:false}) 
                 }
                 else{
-                    this.setState({success:false,message:data.message,any_errors_:true,errors:data.errors})
+                    this.setState({success:false,message:data.message,any_errors_:true,errors:data.errors,any_errors:false})
                 }
+               
+                console.log(this.state.errors)  
             }
             console.log(data.code)
         })
@@ -104,10 +112,6 @@ class SignupForm extends React.Component {
             console.log(error)
             this.setState({loading:false,any_errors_:true,message:"Network error"})
         })
-    }
-
-    componentDidMount(){
-   
     }
 
     onDismiss(){
@@ -131,14 +135,14 @@ class SignupForm extends React.Component {
                         <input type="email"  onChange={this.handleInputChange} value={this.state.email} className="form-control" placeholder="Email" name="email" />
                     </div>
                     <div class="form-group">
-                        <input type="password"  onChange={this.handleInputChange} value={this.state.password} className="form-control" placeholder="Password" name="password" />
+                        <textarea  onChange={this.handleInputChange} value={this.state.password} className="form-control" placeholder="Address" name="address"></textarea>
                     </div>
                     <div class="form-group">
-                        <button class="btn" onClick={this.handleSubmit}>Signup <Loader loading={this.state.loading}/></button>
+                        <button class="btn" onClick={this.handleSubmit}>Add<Loader loading={this.state.loading}/></button>
                     </div>
                </form>
           </div>
       );
     }
   }
-export default Signup
+export default Add

@@ -1,0 +1,4 @@
+git credential fill
+protocol=https
+host=github.com
+<empty line here>
